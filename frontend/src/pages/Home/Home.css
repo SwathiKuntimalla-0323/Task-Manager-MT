@@ -1,0 +1,402 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: "Arial", sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+  }
+  
+  /* Header Styles */
+  .header {
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Layout Styles */
+  .content {
+    display: flex;
+    height: calc(100vh - 60px);
+  }
+  
+  /* Sidebar Styles */
+  .sidebar {
+    background-color: #fff;
+    width: 250px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+  }
+  
+  .new-task-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .new-task-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .menu-item {
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 1rem;
+    color: #333;
+    border-left: 4px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .menu-item:hover {
+    background-color: #f4f4f9;
+    border-left: 4px solid #007bff;
+  }
+  
+  .menu-item.active {
+    background-color: #e6f0ff;
+    border-left: 4px solid #007bff;
+    font-weight: bold;
+  }
+  
+  /* Main Content Styles */
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9;
+    overflow-y: auto;
+  }
+  
+  /* Task Grid Styles */
+.task-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+    gap: 20px; /* Spacing between cards */
+    margin-top: 20px;
+  }
+  
+  /* Task Card Styles */
+  .task-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 220px; /* Adjust height to fit content */
+    width: 90%; /* Adjust width to fit 3 cards per row */
+    margin: auto; /* Center the card horizontally */
+  }
+  
+  .task-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Task Card Title */
+  .task-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #007bff;
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Add ellipsis to long titles */
+  }
+  
+  /* Task Card Details */
+  .task-card p {
+    font-size: 0.9rem;
+    margin: 5px 0;
+    color: #555;
+    overflow-wrap: break-word; /* Break long words */
+  }
+  
+  /* Task Card Buttons */
+  .card-actions {
+    display: flex;
+    justify-content: space-between; /* Align buttons to the ends */
+    align-items: center;
+    margin-top: auto; /* Push buttons to the bottom */
+  }
+  
+  .status-btn,
+  .delete-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .status-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .delete-btn {
+    background-color: #dc3545;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c82333;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .task-grid {
+      grid-template-columns: repeat(2, 1fr); /* 2 cards per row for smaller screens */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .task-grid {
+      grid-template-columns: repeat(1, 1fr); /* 1 card per row for very small screens */
+    }
+  }
+  
+  
+  /* Pagination Styles */
+  .pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .pagination button {
+    padding: 8px 12px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .pagination button:hover {
+    background-color: #0056b3;
+  }
+  
+  .pagination button.active {
+    background-color: #0056b3;
+    font-weight: bold;
+  }
+  
+  .pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Sidebar Styles */
+.sidebar {
+    background-color: #ffffff;
+    width: 250px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+  
+  .menu-item {
+    padding: 15px 20px;
+    font-size: 1rem;
+    color: #333;
+    text-align: left;
+    border-left: 4px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-left-color 0.3s ease;
+  }
+  
+  .menu-item:hover {
+    background-color: #f4f4f9;
+    border-left-color: #007bff;
+  }
+  
+  .menu-item.active {
+    background-color: #e6f0ff;
+    border-left-color: #007bff;
+    font-weight: bold;
+    color: #0056b3;
+  }
+
+/* Task Status Button */
+.task-card button.status-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+  }
+  
+  .task-card button.status-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Dynamic Status Colors */
+  .status.pending {
+    color: #ffc107;
+  }
+  
+  .status.completed {
+    color: #28a745;
+  }
+  
+  
+  
+  
+  /* Task Card Styles */
+.task-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative; /* Required for absolute positioning of child elements */
+    height: 220px; /* Adjust height to fit content */
+    width: 90%; /* Adjust width to fit 3 cards per row */
+    margin: auto; /* Center the card horizontally */
+  }
+  
+  .task-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Edit Button Styles */
+  .edit-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .edit-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Task Card Title */
+  .task-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #007bff;
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Add ellipsis to long titles */
+  }
+  /* Navbar */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+}
+
+.record-audio-btn {
+  background-color: #ffc107;
+  color: #000;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.record-audio-btn:hover {
+  background-color: #e0a800;
+}
+
+/* Overlay */
+.record-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+}
+
+.record-overlay.open {
+  transform: translateX(0);
+}
+
+.record-overlay.closed {
+  transform: translateX(100%);
+}
+
+.close-overlay-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.close-overlay-btn:hover {
+  color: red;
+}
+
+  /* Responsive Sidebar */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+      box-shadow: none;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+  
+    .menu-item {
+      text-align: center;
+    }
+  }
