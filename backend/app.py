@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token
@@ -11,13 +12,19 @@ from datetime import datetime
 import uuid
 import speech_recognition as sr
 from pydub import AudioSegment
-
-
-
-
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
+import eventlet
+import eventlet.wsgi
+from eventlet import websocket
+import ssl
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
+
+# Get absolute paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CERT_PATH = os.path.join(BASE_DIR, "../cert.pem")
+KEY_PATH = os.path.join(BASE_DIR, "../key.pem")
 
 app.config["JWT_SECRET_KEY"] = "swathi"  # Secret key for JWT
 jwt = JWTManager(app)
@@ -28,10 +35,14 @@ db = client["task_manager_db"]
 users_collection = db["users"]
 tasks_collection = db["tasks"]
 audio_collection = db["audio_files"]
+messages_collection = db["messages"]
+
+
+socketio = SocketIO(app, cors_allowed_origins="*")
 # print(transcriptions_collection)
 r = sr.Recognizer()
 
-print(db.list_collection_names())
+ 
 
 
 # Create folder for uploads if it doesn't exist
@@ -40,6 +51,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ---------------------------- User Routes ----------------------------
+
 
 
 def record_text(audiofile):
@@ -238,25 +250,22 @@ def edit_task(task_id):
 @app.route("/api/users", methods=["GET"])
 def get_users():
     try:
-        # Get the current user's email from query parameters
-        exclude_email = request.args.get("exclude_email")
-        query = {}
-        if exclude_email:
-            query["email"] = {"$ne": exclude_email}  # Exclude the logged-in user
-
-        users = list(users_collection.find(query, {"_id": 1, "name": 1}))
+        users = list(users_collection.find({}, {"_id": 1, "name": 1}))  # Fetch users with only `_id` and `name`
+        
+        # Convert ObjectId to string for JSON response
         for user in users:
             user["_id"] = str(user["_id"])
+        
         return jsonify({"success": True, "users": users}), 200
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
 
 
-# Audio related 
-UPLOAD_FOLDER = "./uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# # Audio related 
+# UPLOAD_FOLDER = "./uploads"
+# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 @app.route('/upload-audio', methods=['POST'])
 def upload_audio():
@@ -316,5 +325,107 @@ def get_suggestions():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@socketio.on("connect")
+def handle_connect():
+    print("A user connected")
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    print("A user disconnected")
+
+@socketio.on("private_message")
+def handle_private_message(data):
+    print(f"[DEBUG] Received message data: {data}")
+
+    if not isinstance(data, dict):
+        print("Error: Data received is not a dictionary")
+        return
+
+    if "sender_id" not in data or "receiver_id" not in data or "message" not in data:
+        print("Error: Missing sender_id, receiver_id, or message in data")
+        return
+
+    sender_id = data["sender_id"]
+    receiver_id = data["receiver_id"]
+    message = data["message"]
+
+    # Store message in MongoDB
+    message_entry = {
+        "sender_id": sender_id,
+        "receiver_id": receiver_id,
+        "message": message,
+        "timestamp": datetime.utcnow()
+    }
+    result = messages_collection.insert_one(message_entry)
+
+    # Convert MongoDB _id to string before emitting
+    message_entry["_id"] = str(result.inserted_id)
+    message_entry["timestamp"] = message_entry["timestamp"].isoformat()  # Convert datetime to string
+
+    # Emit message to sender and receiver
+    emit("new_message", message_entry, room=sender_id)
+    emit("new_message", message_entry, room=receiver_id)
+
+ 
+
+
+
+@socketio.on("join_chat")
+def handle_join_chat(data):
+    print(f"[DEBUG] join_chat event received: {data}")  
+
+    if not isinstance(data, dict) or "user_id" not in data:
+        print("[ERROR] Invalid join_chat data received")
+        return
+
+    user_id = str(data["user_id"])  # Convert to string to avoid issues
+    join_room(user_id)  
+    print(f"User {user_id} joined chat room successfully")
+
+
+@app.route("/api/messages", methods=["GET"])
+def get_messages():
+    user_id = request.args.get("user_id")
+    contact_id = request.args.get("contact_id")
+
+    if not user_id or not contact_id:
+        return jsonify({"success": False, "message": "Missing parameters"}), 400
+
+    # Fetch messages for both sender and receiver
+    messages = list(messages_collection.find({
+        "$or": [
+            {"sender_id": user_id, "receiver_id": contact_id},
+            {"sender_id": contact_id, "receiver_id": user_id}
+        ]
+    }).sort("timestamp", 1))
+
+    # Convert MongoDB ObjectId and timestamps to JSON serializable format
+    for msg in messages:
+        msg["_id"] = str(msg["_id"])  # Convert ObjectId to string
+        if isinstance(msg["timestamp"], datetime):
+            msg["timestamp"] = msg["timestamp"].isoformat()  # Convert datetime to string
+
+    return jsonify({"success": True, "messages": messages}), 200
+
+
+
+
+# if __name__ == "__main__":
+#     app.run(debug=False,host="0.0.0.0", port=5001,ssl_context=('../cert.pem', '../key.pem'))
+
+# if __name__ == "__main__":
+#     socketio.run(app, debug=True, host="0.0.0.0", port=5001, allow_unsafe_werkzeug=True)
+
 if __name__ == "__main__":
-    app.run(debug=False,host="0.0.0.0", port=5001,ssl_context=('../cert.pem', '../key.pem'))
+    eventlet.wsgi.server(
+        eventlet.wrap_ssl(
+            eventlet.listen(("0.0.0.0", 5001)),
+            certfile="../cert.pem",
+            keyfile="../key.pem",
+            server_side=True,
+            ssl_version=ssl.PROTOCOL_TLSv1_2
+        ),
+        app
+    )
+
