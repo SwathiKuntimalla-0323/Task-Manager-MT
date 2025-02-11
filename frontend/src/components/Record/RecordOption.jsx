@@ -61,7 +61,7 @@ const uploadAudio = async (blob) => {
     formData.append("audio", blob, "recording.wav");
   
     try {
-      const response = await axios.post("http://localhost:5000/upload-audio", formData, {
+      const response = await axios.post("https://10.50.48.48:5001/upload-audio", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
   

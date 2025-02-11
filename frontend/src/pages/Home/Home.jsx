@@ -6,11 +6,14 @@ import  RecordOption from "../../components/Record/RecordOption"
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useLoader } from "../../components/Loader/LoaderContext";
-import { Search } from "@mui/icons-material";
+import { Chat, ChatSharp, Search } from "@mui/icons-material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import TaskModal from "../../components/TaskModal/TaskModal"
+import ChatComponent from "../../components/Chat/ChatComponent";
+import VideoCall from "../../components/Videocall/VideoCall";
+
 
 function Home() {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -31,8 +34,8 @@ function Home() {
 
   const fetchTasks = async () => {
     try {
-      const userId = localStorage.getItem("userId"); // User's unique ID
-      const role = localStorage.getItem("role");     // User's role (admin/user)
+      const userId = localStorage.getItem("userId"); 
+      const role = localStorage.getItem("role");     
   
       const response = await axios.get(`${API_BASE_URL}/api/tasks`, {
         params: { user_id: userId, role: role },  
@@ -61,12 +64,14 @@ function Home() {
 
     };
     const userRole = localStorage.getItem("role");
+    const userId = localStorage.getItem("userId");
     const loggedUserEmail = localStorage.getItem("email"); 
     setRole(userRole)
     setLoggedInUserEmail(loggedUserEmail)
 
     console.log("userrole-----------Home",userRole);
     console.log("email-----------",loggedUserEmail);
+    console.log("useId----------",userId);
     
     
     document.addEventListener("mousedown", handleClickOutside);
@@ -266,20 +271,36 @@ function Home() {
             </li>
             <li
               className={`cursor-pointer py-2 px-4 rounded-lg ${
-                activeTab === "Record"
+                activeTab === "Chat"
                   ? "bg-white text-blue-600"
                   : "hover:bg-blue-600"
               }`}
-              onClick={() => setActiveTab("Record")}
+              onClick={() => setActiveTab("Chat")}
             >
-              Record Option
+             Chat
+            </li>
+            <li
+              className={`cursor-pointer py-2 px-4 rounded-lg ${
+                activeTab === "Video"
+                  ? "bg-white text-blue-600"
+                  : "hover:bg-blue-600"
+              }`}
+              onClick={() => setActiveTab("Video")}
+            >
+             Video
             </li>
           </ul>
+
         </aside>
         <main className="flex-grow bg-gray-200 p-6 overflow-y-auto">
-          {activeTab === "Record" && (
+          {activeTab === "Chat" && (
             <div className="flex justify-center items-center h-full">
-              <RecordOption />
+              <ChatComponent/>
+            </div>
+          )}
+          {activeTab === "Video" && (
+            <div className="flex justify-center items-center h-full">
+              <VideoCall/>
             </div>
           )}
           {activeTab !== "Record" && (

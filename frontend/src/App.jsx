@@ -9,6 +9,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import { LoaderProvider } from "./components/Loader/LoaderContext";
 import Loader from "./components/Loader/Loader";
+// import RealTimeTranscription from "./components/RealTime/Realtime";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
     </Router>
 
     </LoaderProvider>
+   
   );
 }
 

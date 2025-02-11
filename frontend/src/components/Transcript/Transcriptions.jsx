@@ -10,7 +10,7 @@ const Transcriptions = () => {
   // Fetch transcriptions from the backend
   const fetchTranscriptions = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/transcriptions");
+      const response = await axios.get("https://10.50.48.48:5001/api/transcriptions");
       if (response.data.success) {
         setTranscriptions(response.data.transcriptions);
       } else {
